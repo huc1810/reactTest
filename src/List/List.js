@@ -3,6 +3,12 @@ import Item from './Item';
 import films from '../api/data';
 import './Item.css';
 
+const ListTemplate = (props) => {
+  return <div className="list">
+           {props.list}
+        </div>
+}
+
 class FilmList extends Component {
     constructor(props) {
        super(props);
@@ -20,38 +26,41 @@ class FilmList extends Component {
       let myList = this.createList('mylist');
       let recommendations = this.createList('recommendations');
       return (
-
-        <div>
-            <div className="list">
-              {myList}
-            </div>
-            <div className="list">
-              {recommendations}
-            </div>
-        </div>
-       
+        <div> 
+            <ListTemplate list={myList}/>
+            <ListTemplate list={recommendations}/>              
+        </div>       
       );
     }
 
     getData() {
-      setTimeout(() => {
+      let fetch = new Promise((resolve, reject) =>{
+        setTimeout(() => {
+          resolve(films);
+        }, 500);
+      });
+      
+      fetch.then((films) => {
         this.setState({ films: films});
-      }, 0);
+      });
     }
 
     createList(list) {
-      const creatItem = film => <Item key={film.id} 
-                                      list={list} {...film} 
-                                      add={this.addMyList}
-                                      remove={this.removeMyList}
-                                      />;
+     
       const films = this.state.films;
+
+      const creatItem = film => <Item key={film.id} 
+                        list={list} {...film} 
+                        add={this.addMyList}
+                        remove={this.removeMyList}
+                        />;
+      if (!films) {
+        return null;
+      }
 
       if (films) {
         return films[list].map(creatItem);
-      }
-
-      return null;      
+      }    
     }
 
     addMyList(id) {       
@@ -70,8 +79,13 @@ class FilmList extends Component {
     removeMyList(id) {
       let myList = this.state.films.mylist || [];
       let recommendations = this.state.films.recommendations || []; 
-      const filmIndex = myList.findIndex(film => film.id === id);
+    
+      const handler = film => film.id === id;
+      const film = myList.find(handler);
+      const filmIndex = myList.findIndex(handler);
+
       myList.splice(filmIndex, 1);
+      recommendations.push(film);
       this.setState({ films: { mylist: myList, recommendations } });
     }
 
