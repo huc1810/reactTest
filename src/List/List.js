@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import Item from './Item';
-import films from '../api/data';
 import './Item.css';
 
 const ListTemplate = (props) => {
-  return <div className="list">
-           {props.list}
+  return (
+    <div className="">
+        <div className="title">
+          {props.title}
         </div>
+        <div className="list">
+          {props.list}
+        </div>
+    </div>);
 }
 
 class FilmList extends Component {
@@ -27,22 +32,18 @@ class FilmList extends Component {
       let recommendations = this.createList('recommendations');
       return (
         <div> 
-            <ListTemplate list={myList}/>
-            <ListTemplate list={recommendations}/>              
+            <ListTemplate list={myList} title="My List"/>
+            <ListTemplate list={recommendations} title="Recommendations"/>              
         </div>       
       );
     }
 
-    getData() {
-      let fetch = new Promise((resolve, reject) =>{
-        setTimeout(() => {
-          resolve(films);
-        }, 500);
-      });
-      
-      fetch.then((films) => {
-        this.setState({ films: films});
-      });
+    getData() {      
+      fetch("./api/data.json")
+      .then(res => res.json().then((filmsList) => {
+        this.setState({films: filmsList});
+      }))
+      .catch(error => console.error(error));
     }
 
     createList(list) {

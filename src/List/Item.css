@@ -5,6 +5,14 @@
     background-color: black;
 }
 
+.title {
+    color: white;
+    font-size: 35px;
+    text-align: left;
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
 .item {
     width: 170px;
     height: auto;
